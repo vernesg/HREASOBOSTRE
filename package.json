@@ -1,0 +1,22 @@
+{
+  "name": "facebook-share-booster",
+  "version": "1.0.0",
+  "description": "Facebook Share Booster with enhanced features",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.4.0",
+    "ejs": "^3.1.9",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "express-session": "^1.17.3",
+    "socket.io": "^4.7.2",
+    "path": "^0.12.7"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
