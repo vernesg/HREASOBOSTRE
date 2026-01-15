@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body { background: linear-gradient(135deg, #e6e6fa, #dda0dd); color: #333; font-family: Arial, sans-serif; }
+    .navbar { background-color: #6a0dad !important; }
+    .navbar a { color: white !important; }
+    .btn-primary, .btn-success { background-color: #6a0dad; border-color: #6a0dad; }
+    .btn-primary:hover, .btn-success:hover { background-color: #5a0b8a; }
+    h1, h3 { color: #6a0dad; }
+    .list-group-item { background-color: rgba(255, 255, 255, 0.8); border-color: #6a0dad; }
+    .form-control { border-color: #6a0dad; }
+    .form-control:focus { border-color: #5a0b8a; box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25); }
+    .dark-mode { background: linear-gradient(135deg, #2c2c2c, #4b0082); color: #ddd; }
+    .dark-mode .navbar { background-color: #4b0082 !important; }
+    .dark-mode .btn-primary, .dark-mode .btn-success { background-color: #8a2be2; }
+    .dark-mode .list-group-item { background-color: rgba(75, 0, 130, 0.8); color: #ddd; }
+    .dark-mode .form-control { background-color: #333; color: #ddd; border-color: #8a2be2; }
+  </style>
+</head>
+<body class="light-mode">
+  <%- include('navbar') %>
+  <div class="container mt-5">
+    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+    <h3>Stored Cookies</h3>
+    <ul id="cookieList" class="list-group"></ul>
+    <form action="/dashboard/add-cookie" method="POST" class="mt-3">
+      <input type="text" name="cookie" placeholder="Add Cookie" required class="form-control">
+      <button type="submit" class="btn btn-success mt-2"><i class="fas fa-plus"></i> Add</button>
+    </form>
+    <form action="/dashboard/bulk-add" method="POST" class="mt-3">
+      <textarea name="cookies" placeholder="Bulk Add Cookies (one per line)" class="form-control"></textarea>
+      <button type="submit" class="btn btn-primary mt-2"><i class="fas fa-upload"></i> Bulk Add</button>
+    </form>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Dark mode toggle
+    const toggle = document.getElementById('darkModeToggle');
+    toggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+
+    // Real-time cookie loading
+    const cookies = <%= JSON.stringify(cookies) %>;
+    const list = document.getElementById('cookieList');
+    cookies.forEach((cookie, index) => {
+      setTimeout(() => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerHTML = `<i class="fas fa-cookie-bite" style="color: #6a0dad;"></i> Cookie ${index + 1}: ${cookie.substring(0, 50)}...`;
+        list.appendChild(li);
+      }, index * 500); // Load one by one
+    });
+  </script>
+</body>
+</html>
