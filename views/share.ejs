@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body { background: linear-gradient(135deg, #e6e6fa, #dda0dd); color: #333; font-family: Arial, sans-serif; }
+    .navbar { background-color: #6a0dad !important; }
+    .navbar a { color: white !important; }
+    .btn-primary { background-color: #6a0dad; border-color: #6a0dad; }
+    .btn-primary:hover { background-color: #5a0b8a; }
+    h1 { color: #6a0dad; }
+    .form-control { border-color: #6a0dad; }
+    .form-control:focus { border-color: #5a0b8a; box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25); }
+    #status { color: #6a0dad; font-weight: bold; }
+    .dark-mode { background: linear-gradient(135deg, #2c2c2c, #4b0082); color: #ddd; }
+    .dark-mode .navbar { background-color: #4b0082 !important; }
+    .dark-mode .btn-primary { background-color: #8a2be2; }
+    .dark-mode .form-control { background-color: #333; color: #ddd; border-color: #8a2be2; }
+  </style>
+</head>
+<body class="light-mode">
+  <%- include('navbar') %>
+  <div class="container mt-5">
+    <h1><i class="fas fa-share"></i> Share Tool</h1>
+    <form id="shareForm">
+      <input type="text" name="link" placeholder="Post Link" required class="form-control mb-2">
+      <input type="number" name="limit" placeholder="Target Shares" required class="form-control mb-2">
+      <button type="submit" class="btn btn-primary"><i class="fas fa-bullseye"></i> Start Sharing</button>
+    </form>
+    <div id="status"></div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Dark mode toggle
+    const toggle = document.getElementById('darkModeToggle');
+    toggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+
+    // Share form submission with real-time updates
+    const socket = io();
+    document.getElementById('shareForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const response = await fetch('/api/share', { method: 'POST', body: formData });
+      const result = await response.json();
+      document.getElementById('status').innerText = result.message;
+    });
+    socket.on('share-update', (data) => {
+      document.getElementById('status').innerText = data.message;
+    });
+  </script>
+</body>
+</html>
